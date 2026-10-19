@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="id" class="theme-default">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <title>Layanan Publik Kemenag Purworejo - Mobile First &amp; Audio Reader</title>
+  <meta name="description" content="Aplikasi Web Mobile-First Layanan Publik Kantor Kementerian Agama Kabupaten Purworejo. Informasi 14 layanan publik, alur pengajuan, fitur pembaca suara layanan (TTS), dan nomor hotline aduan resmi.">
+  <meta name="theme-color" content="#006241">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kemenag Purworejo">
+  
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./assets/logo.svg">
+  <link rel="apple-touch-icon" href="./assets/icon-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <!-- Skip Link untuk Screen Reader & Keyboard -->
+  <a href="#main-content" class="skip-link">Loncat ke Konten Utama</a>
+
+  <!-- Screen Reader Live Announcer -->
+  <div id="a11y-live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" aria-live="assertive" aria-atomic="false"></div>
+
+  <!-- 1. TOP QUICK ACCESSIBILITY & FONT TOOLBAR -->
+  <aside class="a11y-top-bar" aria-label="Bilah Aksesibilitas">
+    <div class="container a11y-top-container">
+      <div class="a11y-top-left">
+        <span aria-hidden="true">🏛️</span>
+        <span>Kantor Kemenag Kabupaten Purworejo</span>
+      </div>
+      <div class="a11y-top-tools">
+        <button type="button" class="btn-a11y-tool" id="font-decrease-btn" aria-label="Kecilkan teks">A-</button>
+        <button type="button" class="btn-a11y-tool" id="font-reset-btn" aria-label="Reset ukuran teks">100%</button>
+        <button type="button" class="btn-a11y-tool" id="font-increase-btn" aria-label="Besarkan teks">A+</button>
+        <button type="button" class="btn-a11y-tool" id="open-a11y-panel-btn" aria-label="Pengaturan tema tampilan">
+          <span aria-hidden="true">🎨</span> Tema
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 2. MAIN MOBILE-FIRST HEADER -->
+  <header class="site-header" role="banner">
+    <div class="container header-container">
+      <a href="#home" class="brand-wrapper" aria-label="Beranda Layanan Publik Kemenag Purworejo">
+        <img src="./assets/logo.svg" alt="Logo Kemenag" class="brand-emblem-svg" width="42" height="42">
+        <div class="brand-titles">
+          <span class="brand-main-title">KEMENTERIAN AGAMA</span>
+          <span class="brand-sub-title">Kabupaten Purworejo &bull; 14 Layanan Publik</span>
+        </div>
+      </a>
+
+      <!-- Header Action Buttons -->
+      <div class="header-actions">
+        <a href="#aduan" class="btn-header-aduan" aria-label="Buka Nomor Hotline Aduan">
+          <span aria-hidden="true">📢</span> <span class="hide-on-mobile">Hotline</span> Aduan
+        </a>
+        <button type="button" class="mobile-nav-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-drawer" aria-label="Buka Menu">
+          ☰
+        </button>
+      </div>
+    </div>
+
+    <!-- PITA KHUSUS HOTLINE ADUAN & WA SIMANTAP (SELALU TERLIHAT) -->
+    <div class="hotline-strip" role="region" aria-label="Kanal Aduan & Pengajuan Resmi">
+      <div class="container hotline-strip-inner">
+        <a href="https://wa.me/6285196822220?text=Halo%20Hotline%20Aduan%20Kemenag%20Purworejo%2C%20saya%20ingin%20menyampaikan%20laporan%20layanan." 
+           target="_blank" rel="noopener noreferrer" class="hotline-link-pill pill-aduan">
+          <span aria-hidden="true">📢</span> <strong>Hotline Aduan:</strong> 085196822220
+        </a>
+        <a href="https://wa.me/6282334451010?text=Halo%20WA%20Si%20MANTAP%20Kemenag%20Purworejo%2C%20saya%20ingin%20mengajukan%20layanan%20publik." 
+           target="_blank" rel="noopener noreferrer" class="hotline-link-pill pill-simantap">
+          <span aria-hidden="true">💬</span> <strong>WA Si MANTAP:</strong> 082334451010
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. PWA INSTALL BANNER -->
+  <aside class="pwa-banner hidden" id="pwa-install-banner" aria-label="Pemasangan Aplikasi Offline">
+    <div class="container pwa-banner-content">
+      <div class="pwa-banner-info">
+        <span class="pwa-banner-icon" aria-hidden="true">📲</span>
+        <div>
+          <div class="pwa-banner-title">Pasang Aplikasi Kemenag Purworejo</div>
+          <div class="pwa-banner-desc">Bisa dibuka offline tanpa internet di layar HP Anda.</div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-warning-soft btn-sm" id="pwa-install-btn">
+        <span aria-hidden="true">⬇️</span> Pasang di HP
+      </button>
+    </div>
+  </aside>
+
+  <!-- 4. KONTEN UTAMA APLIKASI (MAIN) -->
+  <main id="main-content" role="main" tabindex="-1">
+
+    <!-- ====================================================================
+         VIEW 1: HOME / DAFTAR 14 LAYANAN PUBLIK (FOKUS UTAMA)
+         ==================================================================== -->
+    <div id="view-home" class="page-view">
+      <!-- Banner Ringkas Layanan & Pembaca Suara Halaman -->
+      <section class="home-hero-compact" aria-labelledby="hero-title">
+        <div class="container">
+          <div class="hero-header-row">
+            <div>
+              <span class="hero-badge-tag">Biaya Rp 0,- (Gratis Resmi)</span>
+              <h1 class="hero-title-compact" id="hero-title">14 Layanan Publik Kemenag Purworejo</h1>
+              <p class="hero-lead-compact">
+                Pilih jenis layanan di bawah ini untuk melihat persyaratan dan alur pengajuan. Gunakan tombol suara untuk mendengarkan informasi.
+              </p>
+            </div>
+            <div class="hero-quick-audio-btn">
+              <button type="button" class="btn btn-warning-soft btn-lg" onclick="A11yEngine.toggleSpeechCurrentPage()" aria-label="Dengarkan seluruh isi halaman ini">
+                <span aria-hidden="true">🔊</span> Dengarkan Halaman
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Kotak Pencarian & Filter Kategori Swipable -->
+      <section class="container search-section">
+        <div class="search-input-group">
+          <span class="search-icon-inside" aria-hidden="true">🔍</span>
+          <input type="search" 
+                 id="search-input" 
+                 class="search-input-field" 
+                 placeholder="Cari layanan (masjid, madrasah, ponpes, arah kiblat, nikah)..." 
+                 aria-label="Cari jenis layanan publik">
+          <button type="button" id="search-clear-btn" class="search-clear-button hidden" aria-label="Bersihkan pencarian">×</button>
+        </div>
+
+        <!-- Filter Kategori Swipe Horizontal di Mobile -->
+        <div class="category-pill-group" id="category-filters" role="group" aria-label="Filter kategori layanan">
+          <button type="button" class="pill-filter-btn active" data-category-filter="all" aria-pressed="true">Semua (14)</button>
+          <button type="button" class="pill-filter-btn" data-category-filter="Bimas Islam" aria-pressed="false">Bimas Islam</button>
+          <button type="button" class="pill-filter-btn" data-category-filter="Pendidikan Madrasah" aria-pressed="false">Madrasah</button>
+          <button type="button" class="pill-filter-btn" data-category-filter="PD Pontren" aria-pressed="false">Pesantren &amp; LPQ</button>
+          <button type="button" class="pill-filter-btn" data-category-filter="Zakat & Wakaf" aria-pressed="false">Zakat &amp; Wakaf</button>
+          <button type="button" class="pill-filter-btn" data-category-filter="Urusan Agama" aria-pressed="false">Urusan Agama</button>
+        </div>
+
+        <div class="results-meta-bar">
+          <span id="search-results-count" aria-live="polite">Menampilkan 14 dari 14 layanan</span>
+        </div>
+      </section>
+
+      <!-- Grid 14 Layanan Publik -->
+      <section class="container services-list-section" aria-label="Daftar 14 Layanan Publik">
+        <div class="services-cards-grid" id="services-grid">
+          <!-- Dirender otomatis oleh app.js -->
+        </div>
+      </section>
+
+      <!-- Info Tambahan Ringkas PTSP & Ramah Kelompok Rentan -->
+      <section class="container" style="margin: 2rem auto 3rem;">
+        <div class="rentan-tips-card">
+          <div class="tips-icon" aria-hidden="true">♿</div>
+          <div class="tips-content">
+            <h3 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 0.35rem;">Pelayanan Inklusif &amp; Ramah Kelompok Rentan</h3>
+            <p style="font-size: 0.92rem; line-height: 1.5; margin-bottom: 0.75rem;">
+              PTSP Kemenag Purworejo menyediakan loket prioritas langsung tanpa antrean umum, kursi roda gratis, toilet disabilitas, serta pendampingan bagi tunanetra, lansia, dan ibu hamil.
+            </p>
+            <a href="https://wa.me/6282334451010?text=Halo%20PTSP%20Kemenag%20Purworejo%2C%20saya%20pemohon%20kelompok%20rentan%20membutuhkan%20informasi%20layanan." 
+               target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary">
+              <span aria-hidden="true">💬</span> Hubungi Petugas PTSP
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         VIEW 2: DETAIL LAYANAN (DENGARKAN SUARA, PERSYARATAN & ALUR)
+         ==================================================================== -->
+    <div id="view-detail" class="page-view hidden">
+      <!-- Dirender otomatis oleh app.js sesuai rute #layanan/{id} -->
+    </div>
+
+    <!-- ====================================================================
+         VIEW 3: HOTLINE ADUAN & PENGADUAN LAYANAN
+         ==================================================================== -->
+    <div id="view-aduan" class="page-view hidden">
+      <section class="container" style="padding: 1.5rem 1rem 4rem;" aria-labelledby="aduan-heading">
+        <header class="section-head">
+          <h1 class="section-title" id="aduan-heading">Hotline Pengaduan Layanan</h1>
+          <p class="section-subtitle">Saluran resmi pengawasan masyarakat untuk pelayanan yang bersih, transparan, dan profesional.</p>
+        </header>
+
+        <!-- Kartu Utama Kontak Aduan -->
+        <div class="aduan-hero-card">
+          <div class="aduan-badge" aria-hidden="true">📢 HOTLINE RESMI</div>
+          <h2 class="aduan-phone-number">085196822220</h2>
+          <p class="aduan-phone-label">Saluran WhatsApp Pengaduan Kemenag Kabupaten Purworejo</p>
+          
+          <a href="https://wa.me/6285196822220?text=Halo%20Hotline%20Aduan%20Kemenag%20Purworejo%2C%20saya%20ingin%20menyampaikan%20laporan%2Faduan%20pelayanan%20publik." 
+             target="_blank" rel="noopener noreferrer" class="btn btn-danger btn-lg" style="width: 100%; margin-top: 1rem;">
+            <span aria-hidden="true">💬</span> Kirim Laporan via WhatsApp Sekarang
+          </a>
+        </div>
+
+        <!-- Jenis-Jenis Aduan yang Dilayani -->
+        <article class="prose-content-card" style="margin-top: 1.5rem;">
+          <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-bottom: 0.85rem;">
+            Hal-Hal yang Dapat Anda Laporkan:
+          </h2>
+          <ul class="clean-bullet-list">
+            <li><strong>Pungutan Liar (Pungli):</strong> Segala bentuk permintaan biaya di luar ketentuan (seluruh 14 layanan Kemenag Purworejo bertarif Rp 0,- / GRATIS).</li>
+            <li><strong>Keterlambatan Melebihi Waktu Standar (SLA):</strong> Berkas yang sudah lengkap namun prosesnya tertunda tanpa alasan sah.</li>
+            <li><strong>Pelayanan Kurang Ramah atau Diskriminatif:</strong> Petugas yang tidak melayani dengan sopan, transparan, atau diskriminatif terhadap kelompok rentan.</li>
+            <li><strong>Kendala Sistem Layanan Daring:</strong> Permasalahan teknis pendaftaran online melalui WhatsApp Si MANTAP.</li>
+          </ul>
+
+          <h3 style="font-size: 1.15rem; font-weight: 700; margin: 1.5rem 0 0.5rem;">Kompensasi Keterlambatan Layanan:</h3>
+          <p style="line-height: 1.6; color: var(--text-muted); font-size: 0.95rem;">
+            Apabila layanan mengalami keterlambatan yang melampaui batas waktu penyelesaian resmi, Anda berhak menerima kompensasi berupa permohonan maaf resmi, percepatan berkas prioritas, atau pengantaran dokumen bebas biaya ke alamat domisili.
+          </p>
+        </article>
+      </section>
+    </div>
+
+    <!-- ====================================================================
+         VIEW 4: MAKLUMAT & KOMPENSASI PELAYANAN
+         ==================================================================== -->
+    <div id="view-maklumat" class="page-view hidden">
+      <section class="container" style="padding: 1.5rem 1rem 4rem;" aria-labelledby="maklumat-heading">
+        <header class="section-head">
+          <h1 class="section-title" id="maklumat-heading">Maklumat Pelayanan</h1>
+          <p class="section-subtitle">Komitmen integritas pelayanan Kantor Kementerian Agama Kabupaten Purworejo.</p>
+        </header>
+
+        <article class="prose-content-card">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <img src="./assets/logo.svg" alt="" width="64" height="64" aria-hidden="true">
+            <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--primary); margin-top: 0.85rem;">
+              MAKLUMAT PELAYANAN
+            </h2>
+          </div>
+
+          <blockquote class="prose-quote">
+            “Dengan ini kami menyatakan sanggup menyelenggarakan pelayanan sesuai standar pelayanan yang telah ditetapkan dan apabila tidak menepati janji ini, kami siap menerima sanksi sesuai ketentuan peraturan perundang-undangan yang berlaku.”
+          </blockquote>
+
+          <h3 style="font-size: 1.15rem; font-weight: 700; margin: 1.5rem 0 0.75rem;">Jaminan 4 Pasti:</h3>
+          <ul class="clean-bullet-list">
+            <li><strong>Pasti Persyaratannya:</strong> Berkas dokumen transparan dan jelas.</li>
+            <li><strong>Pasti Waktunya:</strong> Memiliki target waktu penyelesaian (SLA) terukur.</li>
+            <li><strong>Pasti Biayanya:</strong> Tarif Rp 0,- (GRATIS), bebas pungutan liar.</li>
+            <li><strong>Pasti Legalitasnya:</strong> Dokumen sah ber-Barcode/TTE resmi.</li>
+          </ul>
+
+          <div style="margin-top: 1.5rem;">
+            <a href="#aduan" class="btn btn-outline-danger" style="width: 100%;">
+              <span aria-hidden="true">📢</span> Hubungi Hotline Aduan jika Ada Kendala
+            </a>
+          </div>
+        </article>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- 5. FLOATING TTS AUDIO CONTROLLER (PEMBACA SUARA AKTIF) -->
+  <aside class="floating-tts-bar" id="floating-tts-bar" aria-label="Pemutar Suara">
+    <div class="tts-info-cluster">
+      <span class="tts-pulse-icon" aria-hidden="true">🔊</span>
+      <span class="tts-status-text" id="tts-status-text">Pembaca Suara</span>
+    </div>
+    <div class="tts-controls-cluster">
+      <button type="button" class="btn btn-sm btn-primary" id="tts-toggle-btn" aria-label="Putar atau jeda suara">
+        <span aria-hidden="true">🔊</span> Baca Suara
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" id="tts-stop-btn" aria-label="Hentikan pembaca suara">
+        <span aria-hidden="true">⏹️</span> Stop
+      </button>
+      <select id="tts-speed-select" class="tts-select" aria-label="Pilih kecepatan suara pembaca">
+        <option value="0.85">0.85x</option>
+        <option value="1.0" selected>1.0x</option>
+        <option value="1.25">1.25x</option>
+      </select>
+    </div>
+  </aside>
+
+  <!-- 6. MOBILE BOTTOM NAVIGATION BAR (THUMB-FRIENDLY) -->
+  <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Navigasi Bawah Layar">
+    <a href="#home" class="bottom-nav-item active" data-bottom-route="home">
+      <span class="bottom-nav-icon" aria-hidden="true">📋</span>
+      <span class="bottom-nav-label">14 Layanan</span>
+    </a>
+    <button type="button" class="bottom-nav-item" id="bottom-nav-search" aria-label="Cari Layanan">
+      <span class="bottom-nav-icon" aria-hidden="true">🔍</span>
+      <span class="bottom-nav-label">Cari</span>
+    </button>
+    <button type="button" class="bottom-nav-item" id="bottom-nav-tts" aria-label="Dengarkan Suara Layanan">
+      <span class="bottom-nav-icon" aria-hidden="true">🔊</span>
+      <span class="bottom-nav-label">Dengarkan</span>
+    </button>
+    <a href="#aduan" class="bottom-nav-item" data-bottom-route="aduan">
+      <span class="bottom-nav-icon" aria-hidden="true">📢</span>
+      <span class="bottom-nav-label">Aduan</span>
+    </a>
+    <button type="button" class="bottom-nav-item" id="bottom-nav-a11y" aria-label="Pengaturan Tampilan & Tema">
+      <span class="bottom-nav-icon" aria-hidden="true">🎨</span>
+      <span class="bottom-nav-label">Tampilan</span>
+    </button>
+  </nav>
+
+  <!-- 7. OFF-CANVAS MOBILE DRAWER -->
+  <div id="mobile-drawer-backdrop" class="mobile-drawer-backdrop hidden" aria-hidden="true"></div>
+  <aside id="mobile-drawer" class="mobile-drawer" role="dialog" aria-modal="true" aria-label="Menu Aplikasi" aria-hidden="true">
+    <div class="mobile-drawer-header">
+      <div class="mobile-drawer-brand">
+        <img src="./assets/logo.svg" alt="" width="36" height="36" aria-hidden="true">
+        <div>
+          <div class="drawer-title-main">Kemenag Purworejo</div>
+          <div class="drawer-title-sub">Layanan Publik Resmi</div>
+        </div>
+      </div>
+      <button type="button" class="mobile-drawer-close" id="mobile-drawer-close-btn" aria-label="Tutup Menu">✕</button>
+    </div>
+    <div class="mobile-drawer-body">
+      <nav aria-label="Menu Drawer">
+        <ul class="drawer-nav-list">
+          <li><a href="#home" class="drawer-nav-link" data-drawer-nav><span class="drawer-icon" aria-hidden="true">📋</span> 14 Layanan Publik</a></li>
+          <li><a href="#aduan" class="drawer-nav-link" data-drawer-nav><span class="drawer-icon" aria-hidden="true">📢</span> Hotline Aduan (085196822220)</a></li>
+          <li><a href="#maklumat" class="drawer-nav-link" data-drawer-nav><span class="drawer-icon" aria-hidden="true">📜</span> Maklumat &amp; Kompensasi</a></li>
+        </ul>
+      </nav>
+
+      <div class="drawer-quick-actions">
+        <div class="drawer-section-heading">Kanal Langsung WhatsApp:</div>
+        <a href="https://wa.me/6285196822220?text=Halo%20Hotline%20Aduan%20Kemenag%20Purworejo%2C%20saya%20ingin%20melapor." 
+           target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger btn-sm drawer-action-btn">
+          <span aria-hidden="true">📢</span> Hotline Aduan: 085196822220
+        </a>
+        <a href="https://wa.me/6282334451010?text=Halo%20WA%20Si%20MANTAP%20Kemenag%20Purworejo%2C%20saya%20ingin%20konsultasi%20layanan." 
+           target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm drawer-action-btn">
+          <span aria-hidden="true">💬</span> WA Si MANTAP: 082334451010
+        </a>
+
+        <div class="drawer-section-heading" style="margin-top: 1rem;">Pengaturan Tampilan:</div>
+        <button type="button" class="btn btn-outline-secondary btn-sm drawer-action-btn" onclick="A11yEngine.toggleAccessibilityModal(); closeMobileDrawer();">
+          <span aria-hidden="true">🎨</span> Ubah Tema &amp; Kontras Teks
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 8. MODAL PENGATURAN TEMA & HURUF -->
+  <div class="a11y-modal hidden" id="accessibility-modal" role="dialog" aria-modal="true" aria-labelledby="a11y-modal-title" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title" id="a11y-modal-title">
+          <span aria-hidden="true">🎨</span> Tampilan &amp; Pembesar Huruf
+        </h2>
+        <button type="button" class="modal-close-btn" data-close-modal aria-label="Tutup Pengaturan">×</button>
+      </div>
+      <div class="modal-body">
+        <!-- Pilihan Tema Kontras -->
+        <div class="a11y-setting-group">
+          <h3 class="setting-group-title">Tema &amp; Kontras Warna</h3>
+          <p class="setting-group-desc">Pilih kontras tampilan yang nyaman untuk mata Anda.</p>
+          <div class="theme-options-grid">
+            <button type="button" class="btn-theme-choice active" data-theme-btn="default" aria-pressed="true">
+              🟢 Hijau Kemenag
+            </button>
+            <button type="button" class="btn-theme-choice" data-theme-btn="dark" aria-pressed="false">
+              🌙 Mode Gelap
+            </button>
+            <button type="button" class="btn-theme-choice" data-theme-btn="yellow-black" aria-pressed="false">
+              🟡 Kuning-Hitam (Low Vision)
+            </button>
+            <button type="button" class="btn-theme-choice" data-theme-btn="black-yellow" aria-pressed="false">
+              ⚫ Hitam-Kuning
+            </button>
+          </div>
+        </div>
+
+        <!-- Ukuran Huruf -->
+        <div class="a11y-setting-group">
+          <h3 class="setting-group-title">Ukuran Teks</h3>
+          <p class="setting-group-desc">Perbesar atau perkecil tulisan di aplikasi.</p>
+          <div class="font-scale-controls-row">
+            <button type="button" class="btn btn-outline-secondary" onclick="A11yEngine.decreaseFontSize()" aria-label="Perkecil huruf">A-</button>
+            <span class="font-scale-value-box" id="font-scale-display">100%</span>
+            <button type="button" class="btn btn-outline-secondary" onclick="A11yEngine.increaseFontSize()" aria-label="Perbesar huruf">A+</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="A11yEngine.resetFontSize()" aria-label="Kembalikan normal">Reset</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-close-modal style="width: 100%;">Tutup &amp; Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. FOOTER RINGKAS -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-content-compact">
+      <div style="margin-bottom: 0.75rem;">
+        <strong>Kantor Kementerian Agama Kabupaten Purworejo</strong><br>
+        <span style="font-size: 0.85rem; opacity: 0.85;">Jl. H.A. Dahlan No. 10, Purworejo, Jawa Tengah 54111</span>
+      </div>
+      <div style="font-size: 0.82rem; opacity: 0.75;">
+        &copy; 2026 Layanan Publik Kemenag Purworejo &bull; Bebas Biaya (Rp 0,-) &bull; Offline PWA
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="./js/data.js"></script>
+  <script src="./js/accessibility.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
